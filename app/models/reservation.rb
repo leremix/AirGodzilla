@@ -12,7 +12,7 @@ class Reservation < ApplicationRecord
     .order(updated_at: :asc)
   }
 
-  pprivate
+  private
 
     def create_notification
       type = self.room.Instant? ? "New Booking" : "New Request"
