@@ -45,3 +45,6 @@ gem 'omniauth', '~> 1.6'
 gem 'paperclip', '~> 5.1.0'
 gem 'geocoder', '~> 1.4'
 gem 'stripe', '~> 3.0.0'
+
+gem 'active_model_serializers', '~> 0.10.0', require: true
+gem 'koala', '~> 3.0.0'
