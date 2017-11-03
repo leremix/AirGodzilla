@@ -1,5 +1,4 @@
 class Api::V1::UsersController < ApplicationController
-
   before_action :authenticate_with_token!, only: [:logout]
 
   def facebook
@@ -8,7 +7,6 @@ class Api::V1::UsersController < ApplicationController
       user_data = graph.get_object("me?fields=name,email,id,picture")
 
       user = User.find_by(email: user_data['email'])
-
       if user
         user.generate_authentication_token
         user.save
@@ -20,19 +18,17 @@ class Api::V1::UsersController < ApplicationController
                     uid: user_data['id'],
                     provider: 'Facebook',
                     image: user_data['picture']['data']['url']
-                  )
+                )
         user.generate_authentication_token
 
         if user.save
           render json: user, status: :ok
         else
-          render json: { error: user.errors, is_success: false }, status: 422
+          render json: { error: user.errors, is_success: false}, status: 422
         end
       end
-
     else
-      render json: { error: "Invalid Facebook Token", is_success: false}, status: uprocessable_entity
-
+      render json: { error: "Invalid Facebook Token", is_success: false}, status: :unprocessable_entity
     end
   end
 
@@ -40,17 +36,15 @@ class Api::V1::UsersController < ApplicationController
     user = User.find_by(access_token: params[:access_token])
     user.generate_authentication_token
     user.save
-    render json: {is_success: true}, status: :ok
+    render json: { is_success: true}, status: :ok
   end
 
   def add_card
     user = User.find(current_user.id)
-
     if user.stripe_id.blank?
       customer = Stripe::Customer.create(
         email: user.email
       )
-
       user.stripe_id = customer.id
       user.save
     else
@@ -58,12 +52,8 @@ class Api::V1::UsersController < ApplicationController
     end
 
     customer.sources.create(source: params[:stripe_token])
-    render json { is_success: true }, status: :ok
-
+    render json: { is_success: true}, status: :ok
   rescue Stripe::CardError => e
-    render json { error: e.message, is_success: false }, status: :not_found
+    render json: { error: e.message, is_success: false}, status: :not_found
   end
-
-  end
-
 end
